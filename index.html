@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Advanced anime search and discovery.">
+  <meta name="description" content="AnimeFinder — advanced anime search with detailed filters, ratings, audio, status, and Crunchyroll links.">
+  <meta name="theme-color" content="#090a0f">
   <title>AnimeFinder — Advanced Anime Search</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -12,7 +13,8 @@
     <a class="brand" href="index.html"><span class="brand-mark">A</span><span>AnimeFinder</span></a>
     <nav>
       <a class="active" href="index.html">Search</a>
-      <a href="details.html">Example Details</a>
+      <a href="#filters">Filters</a>
+      <a href="#favorites-panel">Favorites</a>
     </nav>
   </header>
 
@@ -21,22 +23,22 @@
       <div>
         <p class="eyebrow">ANIME DISCOVERY</p>
         <h1>Find your next<br><span>favorite anime.</span></h1>
-        <p class="hero-copy">Search smarter with filters Crunchyroll doesn't make easy to combine.</p>
+        <p class="hero-copy">Search smarter with filters designed to combine age, audio, type, genre, score, status, and more.</p>
       </div>
-      <div class="hero-stat"><strong>12,000+</strong><span>titles to discover</span></div>
+      <div class="hero-stat"><strong>Smart filters</strong><span>Built for fast discovery</span></div>
     </section>
 
     <section class="search-shell">
       <div class="search-row">
         <label class="search-box">
           <span>⌕</span>
-          <input id="search" type="search" placeholder="Search anime, characters, or keywords...">
+          <input id="search" type="search" placeholder="Search anime, characters, genres, or keywords..." autocomplete="off">
         </label>
         <button class="primary" id="searchButton">Search Anime</button>
       </div>
 
       <div class="content-grid">
-        <aside class="filters">
+        <aside class="filters" id="filters">
           <div class="filter-header"><h2>Filters</h2><button id="clear">Clear all</button></div>
 
           <label>Minimum age rating
@@ -73,7 +75,7 @@
           <label>Genre
             <select id="genre">
               <option value="">Any genre</option>
-              <option>Action</option><option>Adventure</option><option>Comedy</option><option>Fantasy</option><option>Romance</option><option>Sci-Fi</option><option>Drama</option>
+              <option>Action</option><option>Adventure</option><option>Comedy</option><option>Fantasy</option><option>Romance</option><option>Sci-Fi</option><option>Drama</option><option>Mystery</option>
             </select>
           </label>
 
@@ -85,26 +87,34 @@
           </label>
 
           <label>Minimum score
-            <input id="score" type="range" min="0" max="10" step=".5" value="0">
+            <input id="score" type="range" min="0" max="10" step=".1" value="0">
             <span class="range-value"><span id="scoreValue">0</span>/10</span>
           </label>
 
           <label>Sort by
             <select id="sort">
-              <option>Popularity</option><option>Highest rated</option><option>Newest</option><option>Alphabetical</option>
+              <option>Most popular</option><option>Highest rated</option><option>Newest</option><option>Alphabetical</option>
             </select>
+          </label>
+
+          <label class="checkbox-row" id="favorites-panel">
+            <input id="favorites" type="checkbox">
+            <span>Favorites only</span>
           </label>
         </aside>
 
         <section class="results">
-          <div class="results-head"><div><p class="eyebrow">RESULTS</p><h2 id="resultTitle">Popular right now</h2></div><span id="count">6 titles</span></div>
+          <div class="results-head">
+            <div><p class="eyebrow">RESULTS</p><h2 id="resultTitle">Popular right now</h2></div>
+            <span id="count">0 titles</span>
+          </div>
           <div class="cards" id="cards"></div>
         </section>
       </div>
     </section>
   </main>
 
-  <footer><span>AnimeFinder</span><span>Discovery interface prototype</span></footer>
+  <footer><span>AnimeFinder</span><span>Static prototype — connect an anime catalog API for live data</span></footer>
   <script src="app.js"></script>
 </body>
 </html>
