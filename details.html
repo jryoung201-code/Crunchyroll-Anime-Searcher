@@ -1,10 +1,62 @@
 <!doctype html>
-<html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Anime Details — AnimeFinder</title><link rel="stylesheet" href="styles.css"></head>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Anime details — AnimeFinder">
+  <title>Anime Details — AnimeFinder</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
 <body>
-<header class="topbar"><a class="brand" href="index.html"><span class="brand-mark">A</span><span>AnimeFinder</span></a><nav><a href="index.html">Search</a><a class="active" href="details.html">Example Details</a></nav></header>
+<header class="topbar">
+  <a class="brand" href="index.html"><span class="brand-mark">A</span><span>AnimeFinder</span></a>
+  <nav><a href="index.html">Search</a><a class="active" href="details.html">Details</a></nav>
+</header>
 <main class="detail-page">
-<a class="back" href="index.html">← Back to search</a>
-<section class="detail-hero"><div class="poster poster-blue">A</div><div><p class="eyebrow">ANIME DETAILS</p><h1>That Time I Got Reincarnated as a Slime</h1><div class="pills"><span>13+</span><span>TV</span><span>Fantasy</span><span>Action</span></div><p class="description">A sample details page showing how an anime result can expand into a richer discovery experience.</p><div class="score-big">8.5 <small>/ 10</small></div><a class="primary inline" href="https://www.crunchyroll.com/" target="_blank" rel="noopener">Watch on Crunchyroll ↗</a></div></section>
-<section class="info-grid"><div><b>Status</b><span>Finished / Continuing</span></div><div><b>Seasons</b><span>Multiple</span></div><div><b>Episodes</b><span>Multiple</span></div><div><b>Audio</b><span>Sub & Dub</span></div></section>
-</main><footer><span>AnimeFinder</span><span>Discovery interface prototype</span></footer>
-</body></html>
+  <a class="back" href="index.html">← Back to search</a>
+  <section id="details" class="detail-hero">
+    <div class="empty-state"><strong>Loading anime…</strong></div>
+  </section>
+</main>
+<footer><span>AnimeFinder</span><span>Crunchyroll catalog metadata</span></footer>
+<script>
+(async () => {
+  const root = document.getElementById("details");
+  const id = new URLSearchParams(location.search).get("anime");
+  try {
+    const response = await fetch("catalog.json", { cache: "no-store" });
+    if (!response.ok) throw new Error("Catalog unavailable");
+    const catalog = await response.json();
+    const anime = catalog.find(item => item.id === id) || catalog.find(item => item.title === id);
+    if (!anime) {
+      root.innerHTML = '<div class="empty-state"><strong>Anime not found.</strong><span><a class="watch-link" href="index.html">Return to search</a></span></div>';
+      return;
+    }
+    document.title = anime.title + " — AnimeFinder";
+    const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+    const genres = (anime.genres || []).map(esc).join(" • ");
+    const image = anime.image ? '<img src="' + esc(anime.image) + '" alt="' + esc(anime.title) + '">' : '<span>' + esc(anime.title.slice(0,2).toUpperCase()) + '</span>';
+    root.innerHTML = `
+      <div class="poster">${image}</div>
+      <div>
+        <p class="eyebrow">ANIME DETAILS</p>
+        <h1>${esc(anime.title)}</h1>
+        <div class="pills">
+          ${anime.age ? '<span>' + esc(anime.age) + '+</span>' : ''}
+          <span>${esc(anime.type || "TV")}</span>
+          ${genres ? '<span>' + genres + '</span>' : ''}
+          <span>${esc(anime.audio || "Unknown audio")}</span>
+        </div>
+        <p class="description">${esc(anime.description || "No description available.")}</p>
+        ${anime.score ? '<div class="score-big">' + Number(anime.score).toFixed(1) + ' <small>/ 10</small></div>' : ''}
+        <a class="primary inline" href="${esc(anime.crunchylink)}" target="_blank" rel="noopener noreferrer">Watch on Crunchyroll ↗</a>
+      </div>
+    `;
+    document.querySelector(".info-grid")?.remove();
+  } catch (error) {
+    root.innerHTML = '<div class="empty-state"><strong>Could not load this anime.</strong><span>Try returning to the search page.</span></div>';
+  }
+})();
+</script>
+</body>
+</html>
