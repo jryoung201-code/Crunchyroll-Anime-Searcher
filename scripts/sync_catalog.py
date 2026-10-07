@@ -55,6 +55,50 @@ def crunch_link(item):
             return ep["url"]
     return ""
 
+def fetch_page(session, page, per_page, max_retries=6):
+    for attempt in range(max_retries):
+        response = session.post(
+            API,
+            json={"query": QUERY, "variables": {"page": page, "perPage": per_page}},
+            timeout=30,
+        )
+
+        if response.status_code == 429:
+            retry_after = response.headers.get("Retry-After")
+            try:
+                wait = max(5, int(retry_after))
+            except (TypeError, ValueError):
+                wait = 65
+
+            print(
+                f"AniList rate limit reached on page {page}. "
+                f"Waiting {wait}s before retry ({attempt + 1}/{max_retries})...",
+                flush=True,
+            )
+            time.sleep(wait)
+            continue
+
+        response.raise_for_status()
+        payload = response.json()
+
+        # AniList can also return a GraphQL 429 error in a successful HTTP response.
+        errors = payload.get("errors") or []
+        if any(error.get("status") == 429 for error in errors):
+            print(
+                f"AniList GraphQL rate limit reached on page {page}. "
+                f"Waiting 65s before retry ({attempt + 1}/{max_retries})...",
+                flush=True,
+            )
+            time.sleep(65)
+            continue
+
+        if errors:
+            raise RuntimeError(errors)
+
+        return payload
+
+    raise RuntimeError(f"AniList rate limit did not clear after {max_retries} retries.")
+
 def main():
     session = requests.Session()
     session.headers.update({"User-Agent": "AnimeFinder/1.0 (GitHub Pages catalog sync)"})
@@ -64,15 +108,7 @@ def main():
     per_page = 50
 
     while True:
-        response = session.post(
-            API,
-            json={"query": QUERY, "variables": {"page": page, "perPage": per_page}},
-            timeout=30,
-        )
-        response.raise_for_status()
-        payload = response.json()
-        if payload.get("errors"):
-            raise RuntimeError(payload["errors"])
+        payload = fetch_page(session, page, per_page)
 
         info = payload["data"]["Page"]["pageInfo"]
         for item in payload["data"]["Page"]["media"]:
@@ -103,8 +139,12 @@ def main():
         print(f"Fetched AniList page {page}; catalog matches so far: {len(catalog)}", flush=True)
         if not info["hasNextPage"]:
             break
+
         page += 1
-        time.sleep(0.8)
+
+        # AniList's official docs currently warn that the API is temporarily
+        # limited to 30 requests/minute. Keep the normal pace below that limit.
+        time.sleep(2.5)
 
     catalog.sort(key=lambda x: x["title"].lower())
     OUTPUT.write_text(json.dumps(catalog, ensure_ascii=False, separators=(",", ":")), encoding="utf-8")
