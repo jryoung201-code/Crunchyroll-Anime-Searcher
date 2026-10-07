@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Advanced anime search and discovery.">
+  <title>AnimeFinder — Advanced Anime Search</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="index.html"><span class="brand-mark">A</span><span>AnimeFinder</span></a>
+    <nav>
+      <a class="active" href="index.html">Search</a>
+      <a href="details.html">Example Details</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">ANIME DISCOVERY</p>
+        <h1>Find your next<br><span>favorite anime.</span></h1>
+        <p class="hero-copy">Search smarter with filters Crunchyroll doesn't make easy to combine.</p>
+      </div>
+      <div class="hero-stat"><strong>12,000+</strong><span>titles to discover</span></div>
+    </section>
+
+    <section class="search-shell">
+      <div class="search-row">
+        <label class="search-box">
+          <span>⌕</span>
+          <input id="search" type="search" placeholder="Search anime, characters, or keywords...">
+        </label>
+        <button class="primary" id="searchButton">Search Anime</button>
+      </div>
+
+      <div class="content-grid">
+        <aside class="filters">
+          <div class="filter-header"><h2>Filters</h2><button id="clear">Clear all</button></div>
+
+          <label>Minimum age rating
+            <select id="age">
+              <option value="">Any rating</option>
+              <option value="7">7+</option>
+              <option value="13">13+</option>
+              <option value="16">16+</option>
+              <option value="18">18+</option>
+            </select>
+          </label>
+
+          <label>Audio
+            <select id="audio">
+              <option value="">Any audio</option>
+              <option>Dub</option><option>Sub</option><option>Sub & Dub</option>
+            </select>
+          </label>
+
+          <label>Type
+            <select id="type">
+              <option value="">Any type</option>
+              <option>TV</option><option>Movie</option><option>OVA</option><option>Special</option>
+            </select>
+          </label>
+
+          <label>Release year
+            <select id="year">
+              <option value="">Any year</option>
+              <option>2026</option><option>2025</option><option>2024</option><option>2023</option><option>2022</option><option>2021</option><option>2020</option>
+            </select>
+          </label>
+
+          <label>Genre
+            <select id="genre">
+              <option value="">Any genre</option>
+              <option>Action</option><option>Adventure</option><option>Comedy</option><option>Fantasy</option><option>Romance</option><option>Sci-Fi</option><option>Drama</option>
+            </select>
+          </label>
+
+          <label>Availability
+            <select id="status">
+              <option value="">Any status</option>
+              <option>Currently Airing</option><option>Finished</option>
+            </select>
+          </label>
+
+          <label>Minimum score
+            <input id="score" type="range" min="0" max="10" step=".5" value="0">
+            <span class="range-value"><span id="scoreValue">0</span>/10</span>
+          </label>
+
+          <label>Sort by
+            <select id="sort">
+              <option>Popularity</option><option>Highest rated</option><option>Newest</option><option>Alphabetical</option>
+            </select>
+          </label>
+        </aside>
+
+        <section class="results">
+          <div class="results-head"><div><p class="eyebrow">RESULTS</p><h2 id="resultTitle">Popular right now</h2></div><span id="count">6 titles</span></div>
+          <div class="cards" id="cards"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>AnimeFinder</span><span>Discovery interface prototype</span></footer>
+  <script src="app.js"></script>
+</body>
+</html>
